@@ -1,11 +1,16 @@
 from rest_framework import serializers
-from .models import UserDetail,Group,GroupMessage,Conversation,Message
+from .models import UserDetail,Group,GroupMessage
 from django.contrib.auth.models import User
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserDetail
+        fields = ['username', 'dob', 'phone_number', 'email','online','lastseen']
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
         extra_kwargs = {
             'password': {'write_only': True},  # So that password is not shown in GET requests
             'email': {'required': True},       # Example of validation or other options
@@ -25,11 +30,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class UserDetailsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserDetail
-        fields = ['username', 'dob', 'phone_number', 'email']
-
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
@@ -38,14 +38,14 @@ class GroupSerializer(serializers.ModelSerializer):
 class GroupMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupMessage
-        fields = ['id', 'sender', 'group', 'text', 'timestamp']
+        fields = ['id', 'sender','sender_username', 'group', 'text', 'timestamp']
 
-class ConversationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Conversation
-        fields = ['id', 'initiator', 'receiver', 'start_time']
+# class ConversationSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Conversation
+#         fields = ['id', 'initiator', 'receiver', 'start_time']
 
-class MessageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Message
-        fields = ['id', 'sender', 'text', 'conversation_id', 'timestamp']                
+# class MessageSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Message
+#         fields = ['id', 'sender', 'text', 'conversation_id', 'timestamp']                

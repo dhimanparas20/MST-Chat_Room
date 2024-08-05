@@ -55,7 +55,6 @@ STORAGES = {
     },
 }
 
-
 ROOT_URLCONF = 'mst_chat.urls'
 
 TEMPLATES = [
@@ -76,6 +75,11 @@ TEMPLATES = [
 
 ASGI_APPLICATION = 'mst_chat.asgi.application'
 
+CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer',  # Use an in-memory channel layer for development
+        },
+    }
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
