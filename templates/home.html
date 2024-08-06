@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App Home</title>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <!-- Left sidebar for chats/groups -->
+      <div class="col-md-3">
+        <div class="sidebar">
+          <h2>Chats/Groups</h2>
+          <ul id="chatList">
+            <!-- Chat list will be dynamically populated -->
+          </ul>
+          <div class="form-group">
+            <input type="text" class="form-control" id="roomIdInput" value="t" placeholder="Enter Room ID">
+            <button type="button" class="btn btn-primary mt-2" id="joinChatBtn">Join Chat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right section for chatting -->
+      <div class="col-md-9">
+        <div class="chat-container">
+          <div id="chatMessages" class="chat-messages">
+            <!-- Chat messages will be dynamically populated -->
+          </div>
+          <div class="chat-input">
+            <textarea id="messageInput" class="form-control" placeholder="Type your message..."></textarea>
+            <button type="button" class="btn btn-primary mt-2" id="sendMessageBtn">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-danger" type="button" onclick="Logout()">Logout</button>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="{% static 'js/home.js' %}"></script>
+</body>
+</html>

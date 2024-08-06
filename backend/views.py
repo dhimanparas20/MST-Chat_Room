@@ -30,8 +30,15 @@ class UserViewSet(ModelViewSet):
     ordering_fields = ['id', 'username', 'email', 'first_name', 'last_name']
     filterset_fields = ['id', 'username', 'email']
 
+class Home(APIView):
+    def get(self, request):
+        return render(request, 'home.html')
+
 # Login for User
 class Login(APIView):
+    def get(self, request):
+        return render(request, 'login.html')
+    
     def post(self, request, format=None):
         try:
             username = request.data['username']
@@ -49,3 +56,18 @@ class Login(APIView):
             "payload": serializer.data,
             "access": token.key  # Return the token key
         })
+
+#Logout
+class Logout(APIView):
+    def post(self, request, format=None):
+        auth_header = request.headers.get('Authorization')
+        if auth_header and auth_header.startswith('Bearer '):
+            token_key = auth_header.split(' ')[1]
+            try:
+                token = Token.objects.get(key=token_key)
+                token.delete()
+                return Response({'success': 'Successfully logged out'}, status=status.HTTP_200_OK)
+            except Token.DoesNotExist:
+                return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Authorization header missing or invalid'}, status=status.HTTP_400_BAD_REQUEST)

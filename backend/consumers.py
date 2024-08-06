@@ -12,6 +12,7 @@ class AsyncChatConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_id = self.scope['url_route']['kwargs']['room_id']
         self.user = self.scope["user"]
+        self.message_sender = None
         
         if (self.user != AnonymousUser()):
             group_exists = await self.get_group_data()
@@ -30,12 +31,14 @@ class AsyncChatConsumer(AsyncJsonWebsocketConsumer):
 
             self.group_data = await self.get_group_data()
             chat_history = await self.get_group_chat_history(groupKey=self.room_id)
+            print(chat_history)
+            print("user: ", self.user.username)
 
             await (self.channel_layer.group_send(
                         self.room_id,
                         {
                             'type': 'chat_message',
-                            'user': self.user.username,
+                            'User': self.user.username,
                             'content': {"message":f"{self.user.username} joined the chat"}
                         }
                 ))
@@ -44,7 +47,7 @@ class AsyncChatConsumer(AsyncJsonWebsocketConsumer):
                         self.room_id,
                         {
                             'type': 'chat_message',
-                            'user': self.user.username,
+                            'User': self.user.username,
                             'content': {"history":chat_history}
                         }
                 ))
@@ -66,7 +69,7 @@ class AsyncChatConsumer(AsyncJsonWebsocketConsumer):
                         self.room_id,
                         {
                             'type': 'chat_message',
-                            'user': self.user.username,
+                            'User': self.user.username,
                             'content': {"message":f"user {self.user.username} left chat"}
                         }
                 ))
@@ -79,7 +82,7 @@ class AsyncChatConsumer(AsyncJsonWebsocketConsumer):
                         self.room_id,
                         {
                             'type': 'chat_message',
-                            'user': self.user.username,
+                            'User': self.user.username,
                             'content': {"message":f"owner {self.user.username} left chat. Group will be deleted"}
                         }
                 ))
@@ -103,12 +106,13 @@ class AsyncChatConsumer(AsyncJsonWebsocketConsumer):
     async def receive_json(self, content, **kwargs):
         # Send message to room group  
         group_id = self.group_data['id']
+        self.message_sender = self.user.username
         await self.create_new_message(sender=self.user.id,group=group_id,text=content['message'])
         await (self.channel_layer.group_send(
             self.room_id,
             {
                 'type': 'chat_message',
-                'user': self.user.username,
+                'User': self.user.username,
                 'content': content
             }
         ))
@@ -118,7 +122,8 @@ class AsyncChatConsumer(AsyncJsonWebsocketConsumer):
     async def chat_message(self, event):
         try:
             content = event['content']
-            await self.send_json(content)   
+            event['user'] = self.message_sender
+            await self.send_json(event)   
 
         except Exception as e:
             print(f"chat_message EXCEPTION: {e}")
