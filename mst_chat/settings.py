@@ -186,3 +186,8 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
 ]
+
+
+# Variables
+BASE_URL = "http:0.0.0.0:5000"
+WEBSOCKET_BASE_URL = f"ws://0.0.0.0:5000"

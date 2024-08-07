@@ -1,9 +1,15 @@
 const csrftoken = getCookie('csrftoken');
 const token = localStorage.getItem('LoginToken'); 
+let username = null;
 var socket = null; // Initialize WebSocket variable
+var baseUrl = window.location.protocol + "//" + window.location.host;
+
 
 $(document).ready(function() {
+    console.log(WEBSOCKET_URL)
     console.log(`Token: ${token}`)
+    username = $('#username').text()
+    console.log("Current User: "+username)
   
     // Function to join a chat room
     $('#joinChatBtn').click(function() {
@@ -12,7 +18,7 @@ $(document).ready(function() {
       
       if (roomId !== '') {
         // Redirect to the chat room using WebSocket
-        socket = new WebSocket(`ws://localhost:5000/chat/${roomId}/?token=${token}`);
+        socket = new WebSocket(`${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
       }
   
       socket.onopen = function() {
@@ -56,12 +62,25 @@ $(document).ready(function() {
         receiveMessage(item['sender_username'], item['text']);
       });
     }
-  
+
+
     // Example: Function to receive and display chat messages via WebSocket
     function receiveMessage(user, message, isSender = false) {
+      if (user===username){
+        user = "You"
+      }
+
       const messageClass = isSender ? 'my-message' : 'other-message';
       const messageHtml = `<div class="${messageClass}"><strong>${user}:</strong> ${message}</div>`;
       $('#chatMessages').append(messageHtml);
+
+      // Apply color based on message content after appending to the DOM
+      if (message.includes('left chat')) {
+          $('#chatMessages .'+messageClass+':last').css("color", "red");
+      } else if (message.includes('joined the chat')) {
+          $('#chatMessages .'+messageClass+':last').css("color", "green");
+      }
+
       // Scroll to bottom of chat messages
       $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
     }

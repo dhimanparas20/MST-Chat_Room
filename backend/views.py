@@ -14,6 +14,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
+from django.conf import settings
 
 #when sending token in header we nedd to specify Toekn or Bearer
 # use [BearerTokenAuthentication] insted of [TokenAuthentication]
@@ -32,12 +33,33 @@ class UserViewSet(ModelViewSet):
 
 class Home(APIView):
     def get(self, request):
-        return render(request, 'home.html')
+        user = request.GET.get('user', None)
+        # Example usage of BASE_URL and WEBSOCKET_BASE_URL
+        base_url = settings.BASE_URL
+        websocket_base_url = settings.WEBSOCKET_BASE_URL
+        
+        # Your view logic here
+        context = {
+            'base_url': base_url,
+            'websocket_base_url': websocket_base_url,
+            'user': user
+        }
+        print(context)
+        return render(request, 'home.html',context)
 
 # Login for User
 class Login(APIView):
     def get(self, request):
-        return render(request, 'login.html')
+        # Example usage of BASE_URL and WEBSOCKET_BASE_URL
+        base_url = settings.BASE_URL
+        websocket_base_url = settings.WEBSOCKET_BASE_URL
+        
+        # Your view logic here
+        context = {
+            'base_url': base_url,
+            'websocket_base_url': websocket_base_url,
+        }
+        return render(request, 'login.html',context)
     
     def post(self, request, format=None):
         try:

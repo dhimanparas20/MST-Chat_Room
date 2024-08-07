@@ -1,4 +1,5 @@
 const csrftoken = getCookie('csrftoken');
+var baseUrl = window.location.protocol + "//" + window.location.host;
 $(document).ready(function() {
     $('#loginForm').submit(function(event) {
       event.preventDefault(); // Prevent default form submission
@@ -12,7 +13,7 @@ $(document).ready(function() {
       // Send AJAX request
       $.ajax({
         type: 'POST',
-        url: 'http://localhost:5000/api/login/',
+        url: `${baseUrl}/api/login/`,
         contentType: 'application/json',
         headers: {'X-CSRFToken': csrftoken},
         mode: 'same-origin', // Do not send CSRF token to another domain.
@@ -21,7 +22,7 @@ $(document).ready(function() {
           console.log('Login successful:', response['access']);
           localStorage.setItem('LoginToken', response['access']);
           // Handle success, e.g., redirect to dashboard
-          window.location.href = '/api/home/';
+          window.location.href = `/api/home?user=${response['payload']['username']}`;
         },
         error: function (xhr, status, error) {
             // Handle errors (e.g., show an error message)
