@@ -6,6 +6,9 @@ var baseUrl = window.location.protocol + "//" + window.location.host;
 
 
 $(document).ready(function() {
+    if (token===null){
+      window.location.href = `${baseUrl}/api/login/`;
+    }
     $('#status').text("Disconnected");
     $('#status').css("color","red");
     console.log(WEBSOCKET_URL)
@@ -151,7 +154,7 @@ async function Logout(){
           }
       },
       error: function (xhr, status, error) {
-          window.location.href = "http://localhost:5000/api/login/";
+          window.location.href = `${baseUrl}/api/login/`;
           // Handle errors (e.g., show an error message)
           console.log("Error: " + error);
           console.log("Status: " + status);
