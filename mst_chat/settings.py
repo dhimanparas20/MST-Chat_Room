@@ -189,5 +189,7 @@ CORS_ALLOW_HEADERS = [
 
 
 # Variables
-BASE_URL = "http:0.0.0.0:5000"
+# BASE_URL = "https://4b4c-59-183-204-195.ngrok-free.app"
+# WEBSOCKET_BASE_URL = f"wss://4b4c-59-183-204-195.ngrok-free.app"
+BASE_URL = "http://0.0.0.0:5000"
 WEBSOCKET_BASE_URL = f"ws://0.0.0.0:5000"

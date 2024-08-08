@@ -13,14 +13,17 @@
       <!-- Left sidebar for chats/groups -->
       <div class="col-md-3">
         <div class="sidebar">
-          <h1>Welcome <span style="color: cyan;" id="username">{{user}}</span></h1>
+          <h1>Welcome <span style="color: rgb(8, 8, 8);" id="username">{{user}}</span></h1>
+          <h2>Status: <span id="status"></span></h2>
           <h2>Chats/Groups</h2>
           <ul id="chatList">
             <!-- Chat list will be dynamically populated -->
           </ul>
           <div class="form-group">
-            <input type="text" class="form-control" id="roomIdInput" value="t" placeholder="Enter Room ID">
+            <input type="text" class="form-control" id="roomIdInput" placeholder="Enter Room ID">
             <button type="button" class="btn btn-primary mt-2" id="joinChatBtn">Join Chat</button>
+            <button type="button" class="btn btn-primary mt-2" id="leaveChatBtn">Leave Chat</button>
+            <button type="button" class="btn btn-primary mt-2" id="genrandom">Generate Random ID</button>
           </div>
         </div>
       </div>

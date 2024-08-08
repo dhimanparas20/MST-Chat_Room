@@ -6,6 +6,8 @@ var baseUrl = window.location.protocol + "//" + window.location.host;
 
 
 $(document).ready(function() {
+    $('#status').text("Disconnected");
+    $('#status').css("color","red");
     console.log(WEBSOCKET_URL)
     console.log(`Token: ${token}`)
     username = $('#username').text()
@@ -23,6 +25,8 @@ $(document).ready(function() {
   
       socket.onopen = function() {
         console.log('WebSocket connection opened');
+        $('#status').text(`Connected to ${roomId}`);
+        $('#status').css("color","green");
       };
   
       socket.onmessage = function(event) {
@@ -52,6 +56,31 @@ $(document).ready(function() {
         // receiveMessage('You', message, true); // Display the sent message on the left
         $('#messageInput').val(''); // Clear message input after sending
       }
+    });
+
+    //generate random chat
+    $('#genrandom').click(function() {
+      // Define the characters to include in the random string
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let randomString = '';
+  
+      // Generate a random string of a specified length
+      for (let i = 0; i < 6; i++) {  // 12 is an example length, you can change it
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          randomString += chars[randomIndex];
+      }
+  
+      // Set the generated string to the input field
+      $('#roomIdInput').val(randomString);
+    });
+
+    //Leave a chat  
+    $('#leaveChatBtn').click(function() {
+      console.log("Leaving chat")
+      $('#chatMessages').empty();
+      $('#status').text("Disconnected");
+      $('#status').css("color","red");
+      socket.close();
     });
   
     function displayHistory(history) {
@@ -107,7 +136,7 @@ $(document).ready(function() {
 // Proper Logout Mechanism
 async function Logout(){
   await $.ajax({
-      url: `/api/logout/`,
+      url: `${baseUrl}/api/logout/`,
       method: "POST",
       headers: {
           'Authorization': `Bearer ${token}`,
@@ -116,7 +145,7 @@ async function Logout(){
       success: function (response, status, xhr) {
           localStorage.removeItem('LoginToken');
           if (response['success']) {
-              window.location.href = "http://localhost:5000/api/login/"; 
+              window.location.href = `${baseUrl}/api/login/`; 
           } else {
               console.log(response);
           }

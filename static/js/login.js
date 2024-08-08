@@ -26,6 +26,7 @@ $(document).ready(function() {
         },
         error: function (xhr, status, error) {
             // Handle errors (e.g., show an error message)
+            alert(error)
             console.log("Error: " + error);
             console.log("Status: " + status);
             console.log("Response: " + xhr.responseText);
