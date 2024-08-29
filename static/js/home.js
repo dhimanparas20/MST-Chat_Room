@@ -3,6 +3,7 @@ const token = localStorage.getItem('LoginToken');
 let username = null;
 var socket = null; // Initialize WebSocket variable
 var baseUrl = window.location.protocol + "//" + window.location.host;
+var WEBSOCKET_URL = baseUrl.split('//')[1];
 
 
 $(document).ready(function() {
@@ -22,8 +23,19 @@ $(document).ready(function() {
       console.log(`roomid: ${roomId}`);
       
       if (roomId !== '') {
-        // Redirect to the chat room using WebSocket
-        socket = new WebSocket(`${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+        try {
+          // Attempt to connect using ws:// (insecure WebSocket)
+          socket = new WebSocket(`ws://${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+          socket.onerror = function (error) {
+            console.error("WebSocket connection using ws:// failed. Trying wss://");
+            // If there's an error with ws, attempt to connect using wss:// (secure WebSocket)
+            socket = new WebSocket(`wss://${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+          };
+        } catch (e) {
+          console.error("An error occurred while trying to connect using ws://", e);
+          // Fallback to using wss:// if ws:// fails
+          socket = new WebSocket(`wss://${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+        }
       }
   
       socket.onopen = function() {

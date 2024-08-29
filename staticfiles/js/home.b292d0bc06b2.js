@@ -3,9 +3,15 @@ const token = localStorage.getItem('LoginToken');
 let username = null;
 var socket = null; // Initialize WebSocket variable
 var baseUrl = window.location.protocol + "//" + window.location.host;
+var WEBSOCKET_URL = baseUrl.split('//')[1];
 
 
 $(document).ready(function() {
+    if (token===null){
+      window.location.href = `${baseUrl}/api/login/`;
+    }
+    $('#status').text("Disconnected");
+    $('#status').css("color","red");
     console.log(WEBSOCKET_URL)
     console.log(`Token: ${token}`)
     username = $('#username').text()
@@ -17,12 +23,25 @@ $(document).ready(function() {
       console.log(`roomid: ${roomId}`);
       
       if (roomId !== '') {
-        // Redirect to the chat room using WebSocket
-        socket = new WebSocket(`${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+        try {
+          // Attempt to connect using ws:// (insecure WebSocket)
+          socket = new WebSocket(`ws://${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+          socket.onerror = function (error) {
+            console.error("WebSocket connection using ws:// failed. Trying wss://");
+            // If there's an error with ws, attempt to connect using wss:// (secure WebSocket)
+            socket = new WebSocket(`wss://${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+          };
+        } catch (e) {
+          console.error("An error occurred while trying to connect using ws://", e);
+          // Fallback to using wss:// if ws:// fails
+          socket = new WebSocket(`wss://${WEBSOCKET_URL}/chat/${roomId}/?token=${token}`);
+        }
       }
   
       socket.onopen = function() {
         console.log('WebSocket connection opened');
+        $('#status').text(`Connected to ${roomId}`);
+        $('#status').css("color","green");
       };
   
       socket.onmessage = function(event) {
@@ -52,6 +71,31 @@ $(document).ready(function() {
         // receiveMessage('You', message, true); // Display the sent message on the left
         $('#messageInput').val(''); // Clear message input after sending
       }
+    });
+
+    //generate random chat
+    $('#genrandom').click(function() {
+      // Define the characters to include in the random string
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let randomString = '';
+  
+      // Generate a random string of a specified length
+      for (let i = 0; i < 6; i++) {  // 12 is an example length, you can change it
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          randomString += chars[randomIndex];
+      }
+  
+      // Set the generated string to the input field
+      $('#roomIdInput').val(randomString);
+    });
+
+    //Leave a chat  
+    $('#leaveChatBtn').click(function() {
+      console.log("Leaving chat")
+      $('#chatMessages').empty();
+      $('#status').text("Disconnected");
+      $('#status').css("color","red");
+      socket.close();
     });
   
     function displayHistory(history) {
@@ -107,7 +151,7 @@ $(document).ready(function() {
 // Proper Logout Mechanism
 async function Logout(){
   await $.ajax({
-      url: `/api/logout/`,
+      url: `${baseUrl}/api/logout/`,
       method: "POST",
       headers: {
           'Authorization': `Bearer ${token}`,
@@ -116,13 +160,13 @@ async function Logout(){
       success: function (response, status, xhr) {
           localStorage.removeItem('LoginToken');
           if (response['success']) {
-              window.location.href = "http://localhost:5000/api/login/"; 
+              window.location.href = `${baseUrl}/api/login/`; 
           } else {
               console.log(response);
           }
       },
       error: function (xhr, status, error) {
-          window.location.href = "http://localhost:5000/api/login/";
+          window.location.href = `${baseUrl}/api/login/`;
           // Handle errors (e.g., show an error message)
           console.log("Error: " + error);
           console.log("Status: " + status);

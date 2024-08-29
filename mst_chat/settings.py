@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-lg4yb*-y41p0hfh9-5b(=c6a-55$xn!))m!z(r_r49c88$l5&!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -152,7 +152,6 @@ REST_FRAMEWORK = {
 
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]  # new
-
 STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -187,9 +186,6 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-
 # Variables
 BASE_URL = "https://mst-chat-room.onrender.com"
 WEBSOCKET_BASE_URL = f"wss://mst-chat-room.onrender.com"
-# BASE_URL = "http://0.0.0.0:5000"
-# WEBSOCKET_BASE_URL = f"ws://0.0.0.0:5000"
